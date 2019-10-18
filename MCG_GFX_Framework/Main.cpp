@@ -1,8 +1,17 @@
 
 #include <cmath>
+#include <iostream>
 
 #include "MCG_GFX_Lib.h"
 
+void ClosesPoint(glm::vec3 _rayOrigin, glm::vec3 _rayDirection, glm::vec3 _point)
+{
+	glm::vec3 AB = _point - _rayOrigin;
+	float AC = glm::dot(AB, _rayDirection);
+	glm::vec3 AD = AC * _rayDirection;
+	glm::vec3 point = _rayOrigin + AD;
+	std::cout << point.x << " " << point.y << " " << point.z << std::endl;
+}
 
 
 int main( int argc, char *argv[] )
@@ -43,7 +52,7 @@ int main( int argc, char *argv[] )
 	//return MCG::ShowAndHold();
 
 
-
+	ClosesPoint(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(0.5f, 0.5f, 0.5f));
 
 
 	// Advanced access - comment out the above DrawPixel and MCG::ShowAndHold lines, then uncomment the following:
@@ -73,3 +82,5 @@ int main( int argc, char *argv[] )
 	
 
 }
+
+
