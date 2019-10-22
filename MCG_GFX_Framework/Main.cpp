@@ -1,17 +1,12 @@
 
 #include <cmath>
 #include <iostream>
+#include<vector>
 
+#include "Ray.h"
+#include "Camera.h"
+#include "Sphere.h"
 #include "MCG_GFX_Lib.h"
-
-void ClosesPoint(glm::vec3 _rayOrigin, glm::vec3 _rayDirection, glm::vec3 _point)
-{
-	glm::vec3 AB = _point - _rayOrigin;
-	float AC = glm::dot(AB, _rayDirection);
-	glm::vec3 AD = AC * _rayDirection;
-	glm::vec3 point = _rayOrigin + AD;
-	std::cout << point.x << " " << point.y << " " << point.z << std::endl;
-}
 
 
 int main( int argc, char *argv[] )
@@ -51,12 +46,26 @@ int main( int argc, char *argv[] )
 	// Program will exit after this line
 	//return MCG::ShowAndHold();
 
+	Camera cam;
+	std::vector<Ray> screenRays;
+	Sphere thing = Sphere(glm::vec3(0, 0, 2), glm::vec3(0, 1, 1), 20);
 
-	ClosesPoint(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), glm::vec3(0.5f, 0.5f, 0.5f));
+	for (size_t x = 0; x < windowSize.x; x++)
+	{
+		for (size_t y = 0; y < windowSize.y; y++)
+		{
+			screenRays.push_back(cam.GenerateRays(glm::vec2(x, y)));
+		}
+	}
 
-
-	// Advanced access - comment out the above DrawPixel and MCG::ShowAndHold lines, then uncomment the following:
-
+	for each (Ray var in screenRays)
+	{
+		HitAndPoint check = thing.HasIntersected(var);
+		if (check.hit)
+		{
+			std::cout << "Hit! at (" << check.distance.x << ", " << check.distance.y << ", " << check.distance.z << ")" << std::endl;
+		}
+	}
 	
 	// Variable to keep track of time
 	float timer = 0.0f;

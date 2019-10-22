@@ -1,7 +1,7 @@
 #include <GLM/glm.hpp>
 
 class Ray;
-struct HitNDistance
+struct HitAndPoint
 {
 	bool hit;
 	glm::vec3 distance;
@@ -11,14 +11,15 @@ struct HitNDistance
 class Object
 {
 public:
-	Object(glm::vec3 _color);
+	Object(glm::vec3 _pos, glm::vec3 _color);
 	~Object();
 	glm::vec3 Normal (glm::vec3 _point);
-	virtual HitNDistance HasIntersected(Ray _ray) = 0;
+	virtual HitAndPoint HasIntersected(Ray _ray) = 0;
 
 protected:
+	glm::vec3 Shade(Ray _ray);
+
 	glm::vec3 centre;
 	glm::vec3 rotation;
 	glm::vec3 color;
-	glm::vec3 Shade(Ray _ray);
 };

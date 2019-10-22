@@ -9,8 +9,12 @@ Camera::~Camera()
 {
 }
 
-std::shared_ptr<Ray> Camera::GenerateRays(glm::ivec3 pixel)
+Ray Camera::GenerateRays(glm::vec2 pixel)
 {
-	std::shared_ptr<Ray> ray = std::make_shared<Ray>();
+	glm::vec3 Origin = glm::vec3(pixel.x, pixel.y, 0);
+	glm::vec3 Direction = glm::vec3(0, 0, -1);
+
+	Ray ray = Ray(Origin, Direction);
+
 	return  ray;
 }

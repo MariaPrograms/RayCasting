@@ -7,10 +7,11 @@ class Camera
 public:
 	Camera();
 	~Camera();
-	std::shared_ptr<Ray> GenerateRays(glm::ivec3 pixel);
+	Ray GenerateRays(glm::vec2 pixel);
 
 private:
-	glm::mat2x3 viewing;
+	glm::mat4x4 viewingMatrix;
+	glm::mat4x4 projectionMatrix;
 	glm::vec3 position;
 	
 };

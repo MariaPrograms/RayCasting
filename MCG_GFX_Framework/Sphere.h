@@ -1,9 +1,10 @@
 #include "Object.h"
 
-class Sphere : Object
+class Sphere : public Object
 {
 public:
-	HitNDistance HasIntersected(Ray _ray);
+	Sphere(glm::vec3 _pos, glm::vec3 _color, float _rad);
+	HitAndPoint HasIntersected(Ray _ray);
 
 private:
 	float radius;
