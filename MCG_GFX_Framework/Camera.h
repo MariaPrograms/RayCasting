@@ -5,15 +5,18 @@ class Ray;
 class Camera
 {
 public:
-	Camera();
+	Camera(glm::vec2 screenWidth);
 	~Camera();
 	Ray GenerateRays(glm::vec2 pixel);
 
 private:
 	glm::mat4x4 viewingMatrix;
 	glm::mat4x4 projectionMatrix;
+	glm::mat4x4 invProjectionMatrix;
 	glm::vec3 position;
-	
+
+	float widthRange;
+	float heightRange;
 };
 
 

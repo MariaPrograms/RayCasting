@@ -1,6 +1,6 @@
 ﻿#include "Sphere.h"
 #include "Ray.h"
-#include <iostream>
+
 
 Sphere::Sphere(glm::vec3 _pos, glm::vec3 _color, float _rad) : Object(_pos, _color)
 {
@@ -14,8 +14,11 @@ HitAndPoint Sphere::HasIntersected(Ray _ray)
 	rtn.hit = false;
 	rtn.distance = glm::vec3(0, 0, 0);
 
-	if (_ray.GetOrgin() == centre)
+	if ((_ray.GetOrgin().z <= centre.z + radius && _ray.GetOrgin().z >= centre.z - radius) &&
+		(_ray.GetOrgin().x <= centre.x + radius && _ray.GetOrgin().x >= centre.x - radius) &&
+		(_ray.GetOrgin().y <= centre.y + radius && _ray.GetOrgin().y >= centre.y - radius))
 	{
+		//std::cout << "Not valid circle to far" << std::endl;
 		return rtn;
 	}
 	
@@ -32,8 +35,9 @@ HitAndPoint Sphere::HasIntersected(Ray _ray)
 	//If the shortest distance is in the sphere 
 	//Making sure its not behind the orgin or pointing away
 	//std
-	if (magnituedOfDistanceVector <= radius || distanceVector.x > _ray.GetOrgin().x || distanceVector.x > _ray.GetDirection().x )
+	if (magnituedOfDistanceVector > radius || centre.z < _ray.GetOrgin().z)
 	{
+		
 		return rtn;
 	}
 
@@ -44,5 +48,6 @@ HitAndPoint Sphere::HasIntersected(Ray _ray)
 
 	rtn.hit = true;
 	rtn.distance = distance;
+	//std::cout << "Valid at (" << rtn.distance.x << ", " << rtn.distance.y << ", " << rtn.distance.z << ")" << std::endl;
 	return rtn;
 }

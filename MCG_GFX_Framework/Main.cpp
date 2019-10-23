@@ -28,15 +28,15 @@ int main( int argc, char *argv[] )
 	MCG::SetBackground( glm::ivec3(0,0,0) );
 
 	// Preparing a position to draw a pixel
-	glm::ivec2 pixelPosition = windowSize / 2;
+
 
 	// Preparing a colour to draw
 	// Colours are RGB, each value ranges between 0 and 255
-	glm::ivec3 pixelColour( 255, 0, 0 );
+	
 
 
 	// Draws a single pixel at the specified coordinates in the specified colour!
-	//MCG::DrawPixel( pixelPosition, pixelColour );
+	//
 
 	// Do any other DrawPixel calls here
 	// ...
@@ -46,9 +46,9 @@ int main( int argc, char *argv[] )
 	// Program will exit after this line
 	//return MCG::ShowAndHold();
 
-	Camera cam;
+	Camera cam(windowSize);
 	std::vector<Ray> screenRays;
-	Sphere thing = Sphere(glm::vec3(0, 0, 2), glm::vec3(0, 1, 1), 20);
+	Sphere thing = Sphere(glm::vec3(windowSize.x/2, windowSize.y / 2, 21), glm::vec3(0, 1, 1), 20);
 
 	for (size_t x = 0; x < windowSize.x; x++)
 	{
@@ -58,13 +58,24 @@ int main( int argc, char *argv[] )
 		}
 	}
 
+	glm::ivec2 pixelPosition;
+	glm::ivec3 pixelColour;
+
 	for each (Ray var in screenRays)
 	{
+		pixelPosition = glm::ivec2(var.GetOrgin().x, var.GetOrgin().y);
+
 		HitAndPoint check = thing.HasIntersected(var);
 		if (check.hit)
 		{
 			std::cout << "Hit! at (" << check.distance.x << ", " << check.distance.y << ", " << check.distance.z << ")" << std::endl;
+			pixelColour = glm::ivec3(255, 0, 0);
 		}
+		else
+		{
+			pixelColour = glm::ivec3(0, 0, 0);
+		}
+		MCG::DrawPixel(pixelPosition, pixelColour);
 	}
 	
 	// Variable to keep track of time
@@ -75,7 +86,7 @@ int main( int argc, char *argv[] )
 	while( MCG::ProcessFrame() )
 	{
 		// Set every pixel to the same colour
-		MCG::SetBackground( glm::ivec3( 0, 0, 0 ) );
+		/*MCG::SetBackground( glm::ivec3( 0, 0, 0 ) );
 
 		// Change our pixel's X coordinate according to time
 		pixelPosition.x = (windowSize.x / 2) + (int)(sin(timer) * 100.0f);
@@ -83,7 +94,7 @@ int main( int argc, char *argv[] )
 		timer += 1.0f / 60.0f;
 
 		// Draw the pixel to the screen
-		MCG::DrawPixel( pixelPosition, pixelColour );
+		MCG::DrawPixel( pixelPosition, pixelColour );*/
 
 	}
 
