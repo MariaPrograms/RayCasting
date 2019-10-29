@@ -10,9 +10,10 @@ public:
 	Ray GenerateRays(glm::vec2 pixel);
 
 private:
-	glm::mat4x4 viewingMatrix;
+	glm::mat4x4 viewMatrix;
 	glm::mat4x4 projectionMatrix;
 	glm::mat4x4 invProjectionMatrix;
+	glm::mat4x4 invViewMatrix;
 	glm::vec3 position;
 
 	float widthRange;

@@ -7,7 +7,9 @@
 Camera::Camera(glm::vec2 screenWidth)
 {
 	projectionMatrix = glm::perspective(0.7f, screenWidth.x / screenWidth.y, 1.0f, 100.0f);
+	//viewMatrix  = glm::lookAt(glm::vec3(0,0,0), glm::vec3(0,0,-1), glm::vec3(0, 1, 0));
 	invProjectionMatrix = glm::inverse(projectionMatrix);
+	//invViewMatrix = glm::inverse(viewMatrix);
 	widthRange = screenWidth.x;
 	heightRange = screenWidth.y;
 }
@@ -24,18 +26,20 @@ Ray Camera::GenerateRays(glm::vec2 pixel)
 	float ndcXPoint = pixel.x * 2 / widthRange - 1;
 	float ndcYPoint = (pixel.y * 2 / heightRange - 1) * -1;
 
-	glm::vec4 point1 = glm::vec4(ndcXPoint, ndcYPoint, -1, 0);
-	glm::vec4 point2 = glm::vec4(ndcXPoint, ndcYPoint, 1, 0);
+	glm::vec4 ndcNearPlanePoint = glm::vec4(ndcXPoint, ndcYPoint, -1, 1);
+	glm::vec4 ndcFarPlanePoint = glm::vec4(ndcXPoint, ndcYPoint, 1, 1);
 
-	glm::vec4 transformedPoint1 = invProjectionMatrix * point1;
-	glm::vec4 transformedPoint2 = invProjectionMatrix * point2;
+	glm::vec4 nearEyeSpacePoint = invProjectionMatrix * ndcNearPlanePoint;
+	glm::vec4 farEyeSpacePoint = invProjectionMatrix * ndcFarPlanePoint;
 
-	glm::vec3 Origin = transformedPoint1 / transformedPoint1.w;
+	glm::vec3 nearRightHandedPoint = nearEyeSpacePoint / nearEyeSpacePoint.w;
+	glm::vec3 farRightHandedPoint = farEyeSpacePoint / farEyeSpacePoint.w;
 
-	glm::vec3 point2vec = transformedPoint2 / transformedPoint2.w;
+	//glm::vec3 origin = invViewMatrix * nearRightHandedPoint;
+	//glm::vec3 farWorldSpacePoint = invViewMatrix * farRightHandedPoint;
 
-	glm::vec3 Direction = Origin - point2vec;
+	glm::vec3 direction = farRightHandedPoint - nearRightHandedPoint;
 
-	Ray ray = Ray(glm::normalize(Origin), glm::normalize(Direction));
+	Ray ray = Ray(nearRightHandedPoint, glm::normalize(direction));
 	return  ray;
 }
