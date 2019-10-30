@@ -18,6 +18,7 @@ public:
 
 	glm::vec3 Normal (glm::vec3 _point);
 	virtual HitAndPoint HasIntersected(Ray _ray) = 0;
+	glm::vec3 GetColor() { return color; }
 
 protected:
 

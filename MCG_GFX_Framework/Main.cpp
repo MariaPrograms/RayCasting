@@ -6,6 +6,7 @@
 #include "Ray.h"
 #include "Camera.h"
 #include "Sphere.h"
+#include "Scene.h"
 #include "MCG_GFX_Lib.h"
 
 
@@ -14,23 +15,20 @@ int main( int argc, char *argv[] )
 	// Variable for storing window dimensions
 	glm::ivec2 windowSize( 800, 600 );
 
-	// Call MCG::Init to initialise and create your window
-	// Tell it what size you want the window to be
-	if(!MCG::Init( windowSize ))
-	{
-		// We must check if something went wrong
-		// (this is very unlikely)
-		return -1;
-	}
-
-	// Sets every pixel to the same colour
-	// parameters are RGBA, numbers are from 0 to 255
-	MCG::SetBackground(glm::ivec3(0,0,0));
-
+	Scene screen(windowSize);
 	Camera cam(windowSize);
-	glm::ivec2 pixelPosition;
+	std::vector<std::shared_ptr<Object>> objects;
+
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(glm::vec3(0, 0, -75), glm::ivec3(1, 1, 1), 10);
+	objects.push_back(sphere);
+
+	std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(glm::vec3(-10, -7, -40), glm::vec3(0, 1, 1), 5);
+	objects.push_back(sphere1);
+
+	screen.DrawScreen(cam, objects);
+
+	/*glm::ivec2 pixelPosition;
 	glm::ivec3 pixelColour;
-	Sphere thing = Sphere(glm::vec3(0, 0, -50), glm::vec3(0, 1, 1), 10);
 
 	for (size_t x = 0; x < windowSize.x; x++)
 	{
@@ -52,7 +50,7 @@ int main( int argc, char *argv[] )
 
 			MCG::DrawPixel(pixelPosition, pixelColour);
 		}
-	}
+	}*/
 	
 	// Displays drawing to screen and holds until user closes window
 	// You must call this after all your drawing calls
