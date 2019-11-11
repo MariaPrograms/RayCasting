@@ -8,11 +8,13 @@ class Camera;
 class Scene
 {
 public:
-	Scene(glm::ivec2 _windowSize);
+	Scene(glm::ivec2 _windowSize, Camera _cam);
 	~Scene();
 	void DrawScreen(Camera _cam, std::vector<std::shared_ptr<Object>> _objects);
+	void DrawPixel(glm::vec2 _pos, std::vector<std::shared_ptr<Object>> _objects);
 
 private:
 	glm::ivec2 windowSize;
 	std::vector<Object> objects;
+	Camera cam;
 };

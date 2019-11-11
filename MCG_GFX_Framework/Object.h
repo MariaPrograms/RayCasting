@@ -7,7 +7,7 @@ class Light;
 struct HitAndPoint
 {
 	bool hit;
-	glm::vec3 distance;
+	float distance;
 };
 
 class Object
@@ -18,7 +18,7 @@ public:
 
 	glm::vec3 Normal (glm::vec3 _point);
 	virtual HitAndPoint HasIntersected(Ray _ray) = 0;
-	glm::vec3 GetColor() { return color; }
+	glm::vec3 GetColor() { return  color * glm::vec3(255, 255, 255); }
 
 protected:
 

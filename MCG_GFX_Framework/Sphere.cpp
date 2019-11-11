@@ -12,7 +12,7 @@ HitAndPoint Sphere::HasIntersected(Ray _ray)
 {
 	HitAndPoint rtn;
 	rtn.hit = false;
-	rtn.distance = glm::vec3(0, 0, 0);
+	rtn.distance = 0;
 	
 	//Shortest Distance from Point to Line
 	glm::vec3 OrginToCentre = centre - _ray.GetOrgin();//(𝑷−𝒂)
@@ -36,6 +36,6 @@ HitAndPoint Sphere::HasIntersected(Ray _ray)
 	glm::vec3 distance = _ray.GetOrgin() + ((scalerValue - x) * _ray.GetDirection());
 
 	rtn.hit = true;
-	rtn.distance = distance;
+	rtn.distance = glm::length(distance);
 	return rtn;
 }
