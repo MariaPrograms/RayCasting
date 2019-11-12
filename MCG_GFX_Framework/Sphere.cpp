@@ -1,6 +1,6 @@
 ﻿#include "Sphere.h"
 #include "Ray.h"
-
+#include <iostream>
 
 Sphere::Sphere(glm::vec3 _pos, glm::vec3 _color, float _rad) : Object(_pos, _color)
 {

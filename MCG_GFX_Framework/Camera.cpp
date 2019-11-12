@@ -14,6 +14,7 @@ Camera::Camera(glm::vec2 screenWidth)
 	heightRange = screenWidth.y;
 }
 
+
 Camera::~Camera()
 {
 }

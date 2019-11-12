@@ -1,7 +1,8 @@
 
 #include <cmath>
 #include <iostream>
-#include<vector>
+#include <vector>
+#include <thread>
 
 #include "Ray.h"
 #include "Camera.h"
@@ -16,8 +17,7 @@ int main( int argc, char *argv[] )
 	glm::ivec2 windowSize( 800, 600 );
 
 	
-	Camera cam(windowSize);
-	Scene screen(cam, windowSize);
+	Scene screen(windowSize);
 	std::vector<std::shared_ptr<Object>> objects;
 
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(glm::vec3(0, 0, -75), glm::ivec3(1, 0, 1), 10);
@@ -26,32 +26,9 @@ int main( int argc, char *argv[] )
 	std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(glm::vec3(-5, -1, -80), glm::vec3(0, 1, 1), 10);
 	objects.push_back(sphere1);
 
-	screen.DrawScreen(cam, objects);
+	//std::thread t(&Scene::DrawScreen, &screen, objects, 2, 2);
+	screen.DrawScreen(objects, 2, 2);
 
-	/*glm::ivec2 pixelPosition;
-	glm::ivec3 pixelColour;
-
-	for (size_t x = 0; x < windowSize.x; x++)
-	{
-		for (size_t y = 0; y < windowSize.y; y++)
-		{
-			pixelPosition = glm::ivec2(x, y);
-			Ray ray = cam.GenerateRays(glm::vec2(x, y));
-
-			HitAndPoint check = sphere->HasIntersected(ray);
-			if (check.hit)
-			{
-				//std::cout << "Hit!" << std::endl;
-				pixelColour = glm::ivec3(255, 0, 0);
-			}
-			else
-			{
-				pixelColour = glm::ivec3(0, 0, 0);
-			}
-
-			MCG::DrawPixel(pixelPosition, pixelColour);
-		}
-	}*/
 	
 	// Displays drawing to screen and holds until user closes window
 	// You must call this after all your drawing calls
