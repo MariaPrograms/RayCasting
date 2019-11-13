@@ -11,6 +11,8 @@ Object::~Object()
 {
 }
 
+
+
 /*glm::vec3 Object::Shade(Ray _ray, glm::vec3 _point, Light _lightSorce)
 {
 	return color;

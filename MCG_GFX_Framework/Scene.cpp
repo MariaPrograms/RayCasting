@@ -1,6 +1,6 @@
 #include "MCG_GFX_Lib.h"
 #include <iostream>
-#include <future>
+#include <thread>
 
 #include "Camera.h"
 #include "Scene.h"
@@ -37,9 +37,9 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 	glm::ivec2 pixelPosition;
 	glm::ivec3 pixelColour;
 
-	for (size_t x = _startPos.x; x < _endPos.x; x++)
+	for (int x = _startPos.x; x < _endPos.x; x++)
 	{
-		for (size_t y = _startPos.y; y < _endPos.y; y++)
+		for (int y = _startPos.y; y < _endPos.y; y++)
 		{
 			float distance = 2000;
 			pixelPosition = glm::ivec2(x, y);
@@ -52,7 +52,7 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 				if (check.hit && check.distance < distance)
 				{
 					distance = check.distance;
-					pixelColour = var->GetColor();
+					pixelColour = var->Shade(ray, check.intersectPoint);
 				}
 			}
 
@@ -63,8 +63,8 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 
 void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, int _screenSplitX, int _screenSplitY)
 {
+	objects = _objects;	
 	std::vector<std::thread> threads;
-	objects = _objects;
 
 	int widthToCheck = windowSize.x / _screenSplitX;
 	int hightToCheck = windowSize.y / _screenSplitY;
@@ -75,10 +75,9 @@ void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, int _scree
 		{
 			glm::vec2 startpos(widthToCheck * x, hightToCheck * y);
 			glm::vec2 endpos(widthToCheck * (x + 1), hightToCheck * (y + 1));
-			
-			std::async( t(&Scene::DrawScreenPart, this, startpos, endpos);
+
+			std::thread t(&Scene::DrawScreenPart, this, startpos, endpos);
 			threads.push_back(std::move(t));
-			//DrawScreenPart(startpos, endpos);
 		}
 	}
 

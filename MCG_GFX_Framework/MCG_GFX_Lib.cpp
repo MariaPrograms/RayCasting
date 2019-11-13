@@ -2,6 +2,7 @@
 #include <SDL/SDL.h>
 // iostream is so we can output error messages to console
 #include <iostream>
+#include <mutex>  
 
 #include "MCG_GFX_Lib.h"
 
@@ -12,6 +13,7 @@ namespace MCG
 	SDL_Window *_window;
 	glm::ivec2 _winSize;
 	unsigned int _lastTime;
+	std::mutex mtx;
 }
 
 
@@ -87,10 +89,14 @@ void MCG::SetBackground( glm::ivec3 colour )
 
 void MCG::DrawPixel( glm::ivec2 position, glm::ivec3 colour )
 {
+	mtx.lock();
+
 	// Set the colour for drawing
 	SDL_SetRenderDrawColor( _renderer, colour.r, colour.g, colour.b, 255 );
 	// Draw our pixel
 	SDL_RenderDrawPoint( _renderer, position.x, position.y );
+
+	mtx.unlock();
 }
 
 
@@ -210,7 +216,7 @@ int MCG::ShowAndHold()
 		// If there's nothing in the queue it will sit and wait around for an event to come along (there are functions which don't wait which can be useful too!)
 		// When there is an event, the function will fill the 'incomingEvent' we have given it as a parameter with the event data
 		SDL_WaitEvent( &incomingEvent );
-		switch( incomingEvent.type )
+		switch (incomingEvent.type)
 		{
 		case SDL_QUIT:
 			// The event type is SDL_QUIT
@@ -224,7 +230,7 @@ int MCG::ShowAndHold()
 			// The event type is SDL_KEYUP
 			// This means that the user has released a key
 			// Let's figure out which key they pressed
-			switch( incomingEvent.key.keysym.sym )
+			switch (incomingEvent.key.keysym.sym)
 			{
 			case SDLK_ESCAPE: // This is the escape key
 				return 0;
