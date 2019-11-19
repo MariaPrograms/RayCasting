@@ -10,7 +10,7 @@ class Light
 public:
 	Light(glm::vec3 _color, float _intencity);
 	~Light();
-	glm::vec3 GetLightAmount() { return color * intencity; }
+	virtual void GetLightAmountNDirection(glm::vec3 _point, glm::vec3& _direction, glm::vec3& _lightAmount) = 0;
 
 protected:
 	glm::mat4 lightToWorld;

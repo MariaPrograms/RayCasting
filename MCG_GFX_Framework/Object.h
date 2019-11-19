@@ -1,9 +1,9 @@
 #include <GLM/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <memory>
 
 class Ray;
-class DistanceLight;
-class PointLight;
+class Light;
 
 struct HitAndPoint
 {
@@ -21,8 +21,7 @@ public:
 	virtual glm::vec3 Normal (glm::vec3 _point) = 0;
 	virtual HitAndPoint HasIntersected(Ray _ray) = 0;
 	virtual glm::vec3 Shade(Ray _ray, glm::vec3 _point) = 0;
-	virtual glm::vec3 DirectionLightShade(Ray _ray, glm::vec3 _point, DistanceLight _light) = 0;
-	virtual glm::vec3 DirectionLightShade(Ray _ray, glm::vec3 _point, PointLight _light) = 0;
+	virtual glm::vec3 LightShade(Ray _ray, glm::vec3 _point, std::shared_ptr<Light> _light) = 0;
 	glm::vec3 GetColor() { return  color * glm::vec3(255, 255, 255); }
 
 protected:

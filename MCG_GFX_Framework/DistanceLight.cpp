@@ -9,3 +9,9 @@ DistanceLight::~DistanceLight()
 {
 
 }
+
+void DistanceLight::GetLightAmountNDirection(glm::vec3 _point, glm::vec3& _direction, glm::vec3& _lightAmount)
+{
+	_direction = direction;
+	_lightAmount = color * intencity;
+}

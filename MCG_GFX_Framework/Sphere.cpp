@@ -1,7 +1,6 @@
 ﻿#include "Sphere.h"
 #include "Ray.h"
-#include "DistanceLight.h"
-#include "PointLight.h"
+#include "Light.h"
 
 #include <iostream>
 
@@ -56,17 +55,11 @@ glm::vec3 Sphere::Shade(Ray _ray, glm::vec3 _point)
 	return smallcol * glm::vec3(255);
 }
 
-glm::vec3 Sphere::DirectionLightShade(Ray _ray, glm::vec3 _point, DistanceLight _light)
+glm::vec3 Sphere::LightShade(Ray _ray, glm::vec3 _point, std::shared_ptr<Light> _light)
 {
-	glm::vec3 L = _light.GetDirection();
-	glm::vec3 hitCol = (albedo / glm::pi<float>()) * _light.GetLightAmount() * glm::vec3(glm::max(0.0f, glm::dot(Normal(_point), L)));
+	glm::vec3 direction;
+	glm::vec3 lightAmount;
+	_light->GetLightAmountNDirection(_point, direction, lightAmount);
+	glm::vec3 hitCol = (albedo / glm::pi<float>()) * lightAmount * glm::vec3(glm::max(0.0f, glm::dot(Normal(_point), direction)));
 	return hitCol * glm::vec3(255);
-}
-
-glm::vec3 Sphere::DirectionLightShade(Ray _ray, glm::vec3 _point, PointLight _light)
-{
-	//glm::vec3 L = _light.GetDirection();
-	//glm::vec3 hitCol = (albedo / glm::pi<float>()) * _light.GetLightAmount() * glm::vec3(glm::max(0.0f, glm::dot(Normal(_point), L)));
-	//return hitCol * glm::vec3(255);
-	return glm::vec3(255);
 }

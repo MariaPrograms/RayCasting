@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "Object.h"
 #include "Ray.h"
-#include "DistanceLight.h"
+#include "Light.h"
 
 Scene::Scene(glm::ivec2 _windowSize)
 {
@@ -52,7 +52,7 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 				if (check.hit && check.distance < distance)
 				{
 					distance = check.distance;
-					pixelColour = var->DirectionLightShade(ray, check.intersectPoint, lights.at(0));
+					pixelColour = var->LightShade(ray, check.intersectPoint, lights.at(0));
 				}
 			}
 
@@ -61,7 +61,7 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 	}
 }
 
-void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vector<DistanceLight> _lights, int _screenSplitX, int _screenSplitY)
+void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vector<std::shared_ptr<Light>> _lights, int _screenSplitX, int _screenSplitY)
 {
 	objects = _objects;	
 	lights = _lights;
