@@ -7,6 +7,8 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include "Scene.h"
+#include "DistanceLight.h"
+
 #include "MCG_GFX_Lib.h"
 
 
@@ -20,15 +22,19 @@ int main( int argc, char *argv[] )
 	
 	Scene screen(windowSize);
 	std::vector<std::shared_ptr<Object>> objects;
+	std::vector<DistanceLight> lights;
 
-	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(glm::vec3(0.5, 0.5, -80), glm::fvec3(.24, .5, 1), 10);
+	DistanceLight light(glm::vec3(1.0f, 0.5f, 0.2f), 1.0f, glm::vec3(0, 1, 1));
+	lights.push_back(light);
+
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(glm::vec3(20, 0.5, -80), glm::fvec3(.24, .5, 1), 10);
 	objects.push_back(sphere);
 
-	std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(glm::vec3(-5, -1, -69), glm::vec3(1, 0, 1), 10);
+	std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(glm::vec3(-20, -1, -80), glm::vec3(1, 0, 1), 10);
 	objects.push_back(sphere1);
 
 	start = std::clock();
-	screen.DrawScreen(objects, 2, 2);
+	screen.DrawScreen(objects, lights, 2, 2);
 
 	duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 	std::cout << "Time: " << duration << '\n';

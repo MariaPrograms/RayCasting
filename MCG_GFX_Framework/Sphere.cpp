@@ -1,8 +1,9 @@
 ﻿#include "Sphere.h"
 #include "Ray.h"
+#include "DistanceLight.h"
+#include "PointLight.h"
 
 #include <iostream>
-#include <algorithm> 
 
 Sphere::Sphere(glm::vec3 _pos, glm::vec3 _color, float _rad) : Object(_pos, _color)
 {
@@ -45,17 +46,27 @@ HitAndPoint Sphere::HasIntersected(Ray _ray)
 
 glm::vec3 Sphere::Normal(glm::vec3 _point)
 {
-	return (_point - centre) * (-1 / radius);
+	return (_point - centre) * (1.0f / radius);
 }
 
 glm::vec3 Sphere::Shade(Ray _ray, glm::vec3 _point)
 {
-	glm::vec3 N = Normal(_point);
-	glm::vec3 V = glm::normalize((_ray.GetDirection()));
+	float FR = glm::max(0.0f, glm::dot(Normal(_point), _ray.GetDirection()));
+	glm::fvec3 smallcol = color * FR;
+	return smallcol * glm::vec3(255);
+}
 
-	float FR = std::max(0.0f, glm::dot(N, V));
+glm::vec3 Sphere::DirectionLightShade(Ray _ray, glm::vec3 _point, DistanceLight _light)
+{
+	glm::vec3 L = _light.GetDirection();
+	glm::vec3 hitCol = (albedo / glm::pi<float>()) * _light.GetLightAmount() * glm::vec3(glm::max(0.0f, glm::dot(Normal(_point), L)));
+	return hitCol * glm::vec3(255);
+}
 
-	glm::fvec3 smallcol = color * (FR * 0.5f);
-
-	return smallcol * glm::vec3(255, 255, 255);
+glm::vec3 Sphere::DirectionLightShade(Ray _ray, glm::vec3 _point, PointLight _light)
+{
+	//glm::vec3 L = _light.GetDirection();
+	//glm::vec3 hitCol = (albedo / glm::pi<float>()) * _light.GetLightAmount() * glm::vec3(glm::max(0.0f, glm::dot(Normal(_point), L)));
+	//return hitCol * glm::vec3(255);
+	return glm::vec3(255);
 }

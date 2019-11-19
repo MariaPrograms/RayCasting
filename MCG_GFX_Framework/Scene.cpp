@@ -2,11 +2,11 @@
 #include <iostream>
 #include <thread>
 
-#include "Camera.h"
 #include "Scene.h"
+#include "Camera.h"
 #include "Object.h"
 #include "Ray.h"
-
+#include "DistanceLight.h"
 
 Scene::Scene(glm::ivec2 _windowSize)
 {
@@ -44,7 +44,7 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 			float distance = 2000;
 			pixelPosition = glm::ivec2(x, y);
 			Ray ray = camera->GenerateRays(glm::vec2(x, y));
-			pixelColour = glm::ivec3(0, 0, 0);
+			pixelColour = glm::ivec3(50, 50, 70);
 
 			for each (std::shared_ptr<Object> var in objects)
 			{
@@ -52,7 +52,7 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 				if (check.hit && check.distance < distance)
 				{
 					distance = check.distance;
-					pixelColour = var->Shade(ray, check.intersectPoint);
+					pixelColour = var->DirectionLightShade(ray, check.intersectPoint, lights.at(0));
 				}
 			}
 
@@ -61,9 +61,10 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 	}
 }
 
-void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, int _screenSplitX, int _screenSplitY)
+void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vector<DistanceLight> _lights, int _screenSplitX, int _screenSplitY)
 {
 	objects = _objects;	
+	lights = _lights;
 	std::vector<std::thread> threads;
 
 	int widthToCheck = windowSize.x / _screenSplitX;
