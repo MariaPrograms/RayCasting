@@ -1,6 +1,8 @@
 #include <GLM/glm.hpp>
 #include <memory>
+
 class Ray;
+class Light;
 
 class Camera
 {
@@ -8,6 +10,7 @@ public:
 	Camera(glm::vec2 screenWidth);
 	~Camera();
 	Ray GenerateRays(glm::vec2 pixel);
+	Ray ShadowRay(glm::vec3 _origin, glm::vec3 _direction);
 
 private:
 	glm::mat4x4 viewMatrix;

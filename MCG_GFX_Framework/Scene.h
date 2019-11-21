@@ -19,4 +19,6 @@ private:
 	glm::ivec2 windowSize;
 	std::vector<std::shared_ptr<Object>> objects;
 	std::vector<std::shared_ptr<Light>> lights;
+
+	bool InShadow(glm::vec3 _intersectPoint, std::shared_ptr<Object> _object);
 };

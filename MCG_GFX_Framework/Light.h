@@ -11,6 +11,7 @@ public:
 	Light(glm::vec3 _color, float _intencity);
 	~Light();
 	virtual void GetLightAmountNDirection(glm::vec3 _point, glm::vec3& _direction, glm::vec3& _lightAmount) = 0;
+	virtual glm::vec3 GetDirection(glm::vec3 _point) = 0;
 
 protected:
 	glm::mat4 lightToWorld;

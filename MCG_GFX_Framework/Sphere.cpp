@@ -57,9 +57,9 @@ glm::vec3 Sphere::Shade(Ray _ray, glm::vec3 _point)
 
 glm::vec3 Sphere::LightShade(Ray _ray, glm::vec3 _point, std::shared_ptr<Light> _light)
 {
-	glm::vec3 direction;
-	glm::vec3 lightAmount;
+	glm::vec3 direction, lightAmount;
 	_light->GetLightAmountNDirection(_point, direction, lightAmount);
-	glm::vec3 hitCol = (albedo / glm::pi<float>()) * lightAmount * glm::vec3(glm::max(0.0f, glm::dot(Normal(_point), direction)));
+	glm::vec3 hitCol = color * glm::dot(Normal(_point), direction) * lightAmount;
+	hitCol = glm::clamp(hitCol, glm::vec3(0), glm::vec3(1));
 	return hitCol * glm::vec3(255);
 }

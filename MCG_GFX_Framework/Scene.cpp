@@ -51,8 +51,11 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 				HitAndPoint check = var->HasIntersected(ray);
 				if (check.hit && check.distance < distance)
 				{
-					distance = check.distance;
-					pixelColour = var->LightShade(ray, check.intersectPoint, lights.at(0));
+					if (!InShadow(check.intersectPoint, var))
+					{
+						distance = check.distance;
+						pixelColour = var->LightShade(ray, check.intersectPoint, lights.at(0));
+					}
 				}
 			}
 
@@ -60,6 +63,26 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 		}
 	}
 }
+
+bool Scene::InShadow(glm::vec3 _intersectPoint, std::shared_ptr<Object> _object)
+{
+	Ray shadowRay = camera->ShadowRay(_intersectPoint, lights.at(0)->GetDirection(_intersectPoint));
+	
+	for (int i = 0; i < objects.size(); i++)
+	{
+		if (objects.at(i) != _object)
+		{
+			HitAndPoint shadow = objects.at(i)->HasIntersected(shadowRay);
+			if (shadow.hit)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 
 void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vector<std::shared_ptr<Light>> _lights, int _screenSplitX, int _screenSplitY)
 {

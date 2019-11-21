@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Ray.h"
+#include "Light.h"
 
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
@@ -42,5 +43,12 @@ Ray Camera::GenerateRays(glm::vec2 pixel)
 	glm::vec3 direction = farRightHandedPoint - nearRightHandedPoint;
 
 	Ray ray = Ray(nearRightHandedPoint, glm::normalize(direction));
+	return  ray;
+}
+
+
+Ray Camera::ShadowRay(glm::vec3 _origin, glm::vec3 _direction)
+{
+	Ray ray = Ray(_origin, _direction);
 	return  ray;
 }
