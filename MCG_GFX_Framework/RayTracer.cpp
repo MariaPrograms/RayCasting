@@ -1,6 +1,8 @@
 #include "RayTrancer.h"
 #include "Ray.h"
 
+
+
 RayTracer::RayTracer()
 {
 }

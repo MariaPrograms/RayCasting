@@ -9,8 +9,8 @@ class Camera
 public:
 	Camera(glm::vec2 screenWidth);
 	~Camera();
-	Ray GenerateRays(glm::vec2 pixel);
-	Ray ShadowRay(glm::vec3 _origin, glm::vec3 _direction);
+	Ray GenerateScreenRay(glm::vec2 pixel);
+	Ray SpecificRay(glm::vec3 _origin, glm::vec3 _direction);
 
 private:
 	glm::mat4x4 viewMatrix;

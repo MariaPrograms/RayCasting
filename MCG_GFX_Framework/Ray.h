@@ -1,4 +1,15 @@
 #include <GLM/glm.hpp>
+#include <memory>
+
+class Object;
+
+struct HitInfo
+{
+	bool hit;
+	float distance;
+	glm::vec3 intersectPoint;
+	std::shared_ptr<Object> object;
+};
 
 class Ray
 {

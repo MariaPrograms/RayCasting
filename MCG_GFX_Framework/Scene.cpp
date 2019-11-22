@@ -32,61 +32,9 @@ Scene::~Scene()
 
 }
 
-void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
-{
-	glm::ivec2 pixelPosition;
-	glm::ivec3 pixelColour;
-
-	for (int x = _startPos.x; x < _endPos.x; x++)
-	{
-		for (int y = _startPos.y; y < _endPos.y; y++)
-		{
-			float distance = 2000;
-			pixelPosition = glm::ivec2(x, y);
-			Ray ray = camera->GenerateRays(glm::vec2(x, y));
-			pixelColour = glm::ivec3(50, 50, 70);
-
-			for each (std::shared_ptr<Object> var in objects)
-			{
-				HitAndPoint check = var->HasIntersected(ray);
-				if (check.hit && check.distance < distance)
-				{
-					if (!InShadow(check.intersectPoint, var))
-					{
-						distance = check.distance;
-						pixelColour = var->LightShade(ray, check.intersectPoint, lights.at(0));
-					}
-				}
-			}
-
-			MCG::DrawPixel(pixelPosition, pixelColour);
-		}
-	}
-}
-
-bool Scene::InShadow(glm::vec3 _intersectPoint, std::shared_ptr<Object> _object)
-{
-	Ray shadowRay = camera->ShadowRay(_intersectPoint, lights.at(0)->GetDirection(_intersectPoint));
-	
-	for (int i = 0; i < objects.size(); i++)
-	{
-		if (objects.at(i) != _object)
-		{
-			HitAndPoint shadow = objects.at(i)->HasIntersected(shadowRay);
-			if (shadow.hit)
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-
 void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vector<std::shared_ptr<Light>> _lights, int _screenSplitX, int _screenSplitY)
 {
-	objects = _objects;	
+	objects = _objects;
 	lights = _lights;
 	std::vector<std::thread> threads;
 
@@ -110,3 +58,111 @@ void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vecto
 		t.join();
 	}
 }
+
+void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
+{
+	glm::ivec2 pixelPosition;
+	glm::ivec3 pixelColour;
+
+	for (int x = _startPos.x; x < _endPos.x; x++)
+	{
+		for (int y = _startPos.y; y < _endPos.y; y++)
+		{
+			pixelPosition = glm::ivec2(x, y);
+			Ray ray = camera->GenerateScreenRay(glm::vec2(x, y));
+			pixelColour = GetColor(ray);
+			MCG::DrawPixel(pixelPosition, pixelColour);
+		}
+	}
+}
+
+glm::vec3 Scene::GetColor(Ray _ray)
+{
+	glm::vec3 pixelColour = glm::vec3(0);
+	HitInfo hitInfo = CheckRay(_ray);
+
+	if (hitInfo.hit)
+	{
+		switch (hitInfo.object->GetMaterial())
+		{
+		case Basic:
+			pixelColour = hitInfo.object->Shade(_ray, hitInfo.intersectPoint);
+			break;
+
+		case Diffuse:
+			for (int i = 0; i < lights.size(); i++)
+			{
+				pixelColour += hitInfo.object->DiffuseShade(_ray, hitInfo.intersectPoint, lights.at(i));
+			}
+			break;
+
+		case Refelctive:
+		{
+			glm::vec3 hitNormal = hitInfo.object->Normal(hitInfo.intersectPoint);
+			glm::vec3 reflectedDirection = Reflect(_ray.GetDirection(), hitNormal);
+			//reflectedDirection = glm::normalize(reflectedDirection);
+			Ray reflectRay = camera->SpecificRay(hitInfo.intersectPoint + hitNormal, reflectedDirection);
+			pixelColour += glm::vec3(0.8) * GetColor(reflectRay);
+			break;
+		}
+		default:
+
+			break;
+
+		}
+	}
+	else
+	{
+		pixelColour = glm::vec3(60);
+	}
+
+	pixelColour = glm::vec3(InShadow(hitInfo.intersectPoint, hitInfo.object)) *  glm::clamp(pixelColour, glm::vec3(0), glm::vec3(255));
+	return pixelColour;
+}
+
+bool Scene::InShadow(glm::vec3 _intersectPoint, std::shared_ptr<Object> _object)
+{
+	Ray shadowRay = camera->SpecificRay(_intersectPoint + _object->Normal(_intersectPoint), lights.at(0)->GetDirection(_intersectPoint));
+
+	for (int i = 0; i < objects.size(); i++)
+	{
+		if (objects.at(i) != _object)
+		{
+			HitInfo shadow = objects.at(i)->HasIntersected(shadowRay);
+			if (shadow.hit)
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+
+glm::vec3 Scene::Reflect(const glm::vec3 &_direction, const glm::vec3 &_normal)
+{
+	return _direction - 2 * glm::dot(_direction, _normal) * _normal;
+}
+
+HitInfo Scene::CheckRay(Ray _ray)
+{
+	float distance = 2000;
+	HitInfo hitInfo;
+	hitInfo.hit = false;
+	for each (std::shared_ptr<Object> var in objects)
+	{
+		HitInfo check = var->HasIntersected(_ray);
+		if (check.hit && check.distance < distance)
+		{
+			for (int i = 0; i < lights.size(); i++)
+			{
+				distance = check.distance;
+				hitInfo = check;
+			}
+		}
+	}
+
+	return hitInfo;
+}
+

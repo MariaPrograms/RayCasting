@@ -20,7 +20,7 @@ Camera::~Camera()
 {
 }
 
-Ray Camera::GenerateRays(glm::vec2 pixel)
+Ray Camera::GenerateScreenRay(glm::vec2 pixel)
 {
 	float range2 = 2;
 	float minimum2 = -1;
@@ -46,9 +46,8 @@ Ray Camera::GenerateRays(glm::vec2 pixel)
 	return  ray;
 }
 
-
-Ray Camera::ShadowRay(glm::vec3 _origin, glm::vec3 _direction)
+Ray Camera::SpecificRay(glm::vec3 _origin, glm::vec3 _direction)
 {
-	Ray ray = Ray(_origin, _direction);
+	Ray ray = Ray(_origin, -_direction);
 	return  ray;
 }
