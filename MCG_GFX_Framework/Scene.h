@@ -27,6 +27,6 @@ private:
 	glm::vec3 GetColor(Ray _ray);
 	HitInfo CheckRay(Ray _ray);
 
-	bool InShadow(glm::vec3 _intersectPoint, std::shared_ptr<Object> _object);
+	int InShadow(HitInfo _info);
 	glm::vec3 Reflect(const glm::vec3 &_direction, const glm::vec3 &_normal);
 };

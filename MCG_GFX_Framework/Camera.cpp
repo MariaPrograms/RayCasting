@@ -48,6 +48,6 @@ Ray Camera::GenerateScreenRay(glm::vec2 pixel)
 
 Ray Camera::SpecificRay(glm::vec3 _origin, glm::vec3 _direction)
 {
-	Ray ray = Ray(_origin, -_direction);
+	Ray ray = Ray(_origin, _direction);
 	return  ray;
 }

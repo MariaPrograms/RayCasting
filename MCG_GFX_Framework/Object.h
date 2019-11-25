@@ -5,6 +5,7 @@
 #include <GLM/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <memory>
+#include <string>
 
 class Ray;
 class Light;
@@ -14,8 +15,7 @@ enum Material
 	Basic,
 	Diffuse,
 	Refelctive,
-	Refraction,
-	Fresnel
+	Refraction
 }; 
 
 struct HitInfo;
@@ -25,7 +25,7 @@ class Object
 public:
 	
 
-	Object(glm::vec3 _pos, glm::vec3 _color, Material _mat);
+	Object(glm::vec3 _pos, glm::vec3 _color, Material _mat, std::string _name);
 	~Object();
 
 	virtual glm::vec3 Normal (glm::vec3 _point) = 0;
@@ -35,6 +35,7 @@ public:
 	glm::vec3 GetColor() { return  color * glm::vec3(255, 255, 255); }
 	Material GetMaterial() { return  mat; }
 	std::shared_ptr<Object> self;
+	std::string name;
 
 protected:
 	glm::vec3 centre;
@@ -42,6 +43,7 @@ protected:
 	glm::vec3 color;
 	glm::vec3 albedo;
 	Material mat;
+	
 };
 
 #endif // !OBJECT_H

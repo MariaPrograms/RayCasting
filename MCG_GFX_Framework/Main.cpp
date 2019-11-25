@@ -28,20 +28,21 @@ int main( int argc, char *argv[] )
 
 	std::shared_ptr<DistanceLight> dLight = std::make_shared<DistanceLight>(glm::vec3(1), 1.0f, glm::vec3(0, 1, 0));
 	std::shared_ptr<DistanceLight> dLight1 = std::make_shared<DistanceLight>(glm::vec3(1), 1.0f, glm::vec3(0, -1, 0));
-	std::shared_ptr<PointLight> pLight = std::make_shared<PointLight>(glm::vec3(1.0f), 1.0f, glm::vec3(0, 0, -80));
-	lights.push_back(pLight);
+	std::shared_ptr<PointLight> pLight = std::make_shared<PointLight>(glm::vec3(1.0f), 1.0f, glm::vec3(20, -30, -80));
+	
 	lights.push_back(dLight);
+	//lights.push_back(pLight);
 	lights.push_back(dLight1);
 
-	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(glm::vec3(20, 0.5, -80), glm::fvec3(.24, .5, 1), Diffuse, 10);
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(glm::vec3(21, 0, -80), glm::fvec3(245.0f /255.0f, 166.0f /255.0f, 230.0f /255.0f), Diffuse, "Blue" , 10);
 	sphere->self = sphere;
 	objects.push_back(sphere);
 
-	std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(glm::vec3(-20, 10, -80), glm::vec3(1, 0, 1), Diffuse, 10);
+	std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(glm::vec3(-21, 0, -80), glm::fvec3(84.0f/255.0f, 69.0f /255.0f, 127.0f /255.0f), Diffuse, "Purple", 10);
 	sphere1->self = sphere1;
 	objects.push_back(sphere1);
 
-	std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(glm::vec3(-20, -20, -80), glm::vec3(1), Diffuse, 15);
+	std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(glm::vec3(0, 0, -80), glm::fvec3(172/255.0f, 123/255.0f, 132/255.0f), Refelctive, "Ground" , 10);
 	sphere2->self = sphere2;
 	objects.push_back(sphere2);
 

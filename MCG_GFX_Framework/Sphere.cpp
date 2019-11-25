@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-Sphere::Sphere(glm::vec3 _pos, glm::vec3 _color, Material _mat, float _rad) : Object(_pos, _color, _mat)
+Sphere::Sphere(glm::vec3 _pos, glm::vec3 _color, Material _mat, std::string _name, float _rad) : Object(_pos, _color, _mat, _name)
 {
 	radius = _rad;
 }
@@ -20,7 +20,7 @@ HitInfo Sphere::HasIntersected(Ray _ray)
 	//Shortest Distance from Point to Line
 	glm::vec3 OrginToCentre = centre - _ray.GetOrgin();//(𝑷−𝒂)
 	float scalerValue = glm::dot(OrginToCentre, _ray.GetDirection()); //(𝑷−𝒂)⋅𝒏
-	glm::vec3 shortestPoint = _ray.GetOrgin() + scalerValue * _ray.GetDirection(); //((𝑷−𝒂)⋅𝒏)𝒏 = X
+	glm::vec3 shortestPoint = (_ray.GetOrgin() + scalerValue) * _ray.GetDirection(); //((𝑷−𝒂)⋅𝒏)𝒏 = X
 
 	//Getting Distnace from X to P 
 	glm::vec3 distanceVector = OrginToCentre - shortestPoint; // P - X || 𝑷−𝒂−((𝑷−𝒂)⋅𝒏)𝒏

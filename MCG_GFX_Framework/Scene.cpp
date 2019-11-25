@@ -92,7 +92,7 @@ glm::vec3 Scene::GetColor(Ray _ray)
 		case Diffuse:
 			for (int i = 0; i < lights.size(); i++)
 			{
-				pixelColour += hitInfo.object->DiffuseShade(_ray, hitInfo.intersectPoint, lights.at(i));
+				pixelColour += hitInfo.object->DiffuseShade(_ray, hitInfo.intersectPoint, lights.at(i)) * glm::vec3(InShadow(hitInfo));
 			}
 			break;
 
@@ -100,11 +100,14 @@ glm::vec3 Scene::GetColor(Ray _ray)
 		{
 			glm::vec3 hitNormal = hitInfo.object->Normal(hitInfo.intersectPoint);
 			glm::vec3 reflectedDirection = Reflect(_ray.GetDirection(), hitNormal);
-			//reflectedDirection = glm::normalize(reflectedDirection);
+			reflectedDirection = glm::normalize(reflectedDirection);
 			Ray reflectRay = camera->SpecificRay(hitInfo.intersectPoint + hitNormal, reflectedDirection);
 			pixelColour += glm::vec3(0.8) * GetColor(reflectRay);
 			break;
 		}
+		case Refraction:
+
+			break;
 		default:
 
 			break;
@@ -113,30 +116,34 @@ glm::vec3 Scene::GetColor(Ray _ray)
 	}
 	else
 	{
-		pixelColour = glm::vec3(60);
+		pixelColour = glm::vec3(184, 74, 98);
 	}
 
-	pixelColour = glm::vec3(InShadow(hitInfo.intersectPoint, hitInfo.object)) *  glm::clamp(pixelColour, glm::vec3(0), glm::vec3(255));
+	
+	pixelColour = glm::clamp(pixelColour, glm::vec3(0), glm::vec3(255));
 	return pixelColour;
 }
 
-bool Scene::InShadow(glm::vec3 _intersectPoint, std::shared_ptr<Object> _object)
+int Scene::InShadow(HitInfo _info)
 {
-	Ray shadowRay = camera->SpecificRay(_intersectPoint + _object->Normal(_intersectPoint), lights.at(0)->GetDirection(_intersectPoint));
+	glm::vec3 dir = lights.at(0)->GetDirection(_info.intersectPoint);
+	glm::vec3 org = _info.intersectPoint + _info.object->Normal(_info.intersectPoint);
+	Ray shadowRay = camera->SpecificRay(org, dir);
 
 	for (int i = 0; i < objects.size(); i++)
 	{
-		if (objects.at(i) != _object)
+		if (objects.at(i) != _info.object)
 		{
 			HitInfo shadow = objects.at(i)->HasIntersected(shadowRay);
 			if (shadow.hit)
 			{
-				return false;
+				std::cout << _info.object->name << " hit " << objects.at(i)->name << std::endl;
+				return 0;
 			}
 		}
 	}
 
-	return true;
+	return 1;
 }
 
 
