@@ -137,7 +137,6 @@ int Scene::InShadow(HitInfo _info)
 			HitInfo shadow = objects.at(i)->HasIntersected(shadowRay);
 			if (shadow.hit)
 			{
-				std::cout << _info.object->name << " hit " << objects.at(i)->name << std::endl;
 				return 0;
 			}
 		}
@@ -149,7 +148,7 @@ int Scene::InShadow(HitInfo _info)
 
 glm::vec3 Scene::Reflect(const glm::vec3 &_direction, const glm::vec3 &_normal)
 {
-	return _direction - 2 * glm::dot(_direction, _normal) * _normal;
+	return _direction - (2 * glm::dot(_direction, _normal) * _normal);
 }
 
 HitInfo Scene::CheckRay(Ray _ray)
@@ -162,11 +161,8 @@ HitInfo Scene::CheckRay(Ray _ray)
 		HitInfo check = var->HasIntersected(_ray);
 		if (check.hit && check.distance < distance)
 		{
-			for (int i = 0; i < lights.size(); i++)
-			{
 				distance = check.distance;
 				hitInfo = check;
-			}
 		}
 	}
 

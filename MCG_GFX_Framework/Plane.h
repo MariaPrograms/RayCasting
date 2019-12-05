@@ -1,16 +1,17 @@
+#pragma once
 #include "Object.h"
 
-class Sphere : public Object
+class Plane : public Object
 {
 public:
-	Sphere(glm::vec3 _pos, glm::vec3 _color, Material _mat, float _rad);
+	Plane(glm::vec3 _pos, glm::vec3 _color, Material _mat, glm::vec3 _direction);
+	~Plane();
 	HitInfo HasIntersected(Ray _ray);
 	glm::vec3 Normal(glm::vec3 _point);
 	glm::vec3 Shade(Ray _ray, glm::vec3 _point);
 	glm::vec3 DiffuseShade(Ray _ray, glm::vec3 _point, std::shared_ptr<Light> _light);
 
 private:
-	float radius;
-
+	glm::vec3 normal;
 };
 

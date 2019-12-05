@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-Sphere::Sphere(glm::vec3 _pos, glm::vec3 _color, Material _mat, std::string _name, float _rad) : Object(_pos, _color, _mat, _name)
+Sphere::Sphere(glm::vec3 _pos, glm::vec3 _color, Material _mat, float _rad) : Object(_pos, _color, _mat)
 {
 	radius = _rad;
 }
