@@ -15,7 +15,7 @@ PointLight::~PointLight()
 
 void PointLight::GetLightAmountNDirection(glm::vec3 _point, glm::vec3& _direction, glm::vec3& _lightAmount)
 {
-	_direction = glm::normalize(GetDirection(_point)); //compute light direction
+	_direction = GetDirection(_point); //compute light direction
 	float r2 = glm::length2(_direction);
 	_lightAmount = intencity * color / r2;// / area;
 }

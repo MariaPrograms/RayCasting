@@ -14,8 +14,6 @@ public:
 	Scene(glm::ivec2 _windowSize);
 	~Scene();
 	void DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vector<std::shared_ptr<Light>> lights, int _screenSplitX, int _screenSplitY);
-	
-	
 
 private:
 	std::shared_ptr<Camera> camera;
@@ -28,5 +26,7 @@ private:
 	HitInfo CheckRay(Ray _ray);
 
 	int InShadow(HitInfo _info);
-	glm::vec3 Reflect(const glm::vec3 &_direction, const glm::vec3 &_normal);
+	glm::vec3 Reflect(const glm::vec3 _direction, const glm::vec3 _normal);
+	glm::vec3 Refract(const glm::vec3 _direction, const glm::vec3 _normal, const float ior);
+	float Fresnel(const glm::vec3 I, const glm::vec3 N, const float ior);
 };

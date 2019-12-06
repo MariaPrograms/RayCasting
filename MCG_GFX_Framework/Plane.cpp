@@ -1,4 +1,4 @@
-#include "Plane.h"
+﻿#include "Plane.h"
 #include "Ray.h"
 #include "Light.h"
 #include <iostream>
@@ -6,7 +6,7 @@
 
 Plane::Plane(glm::vec3 _pos, glm::vec3 _color, Material _mat, glm::vec3 _normal) : Object(_pos, _color, _mat)
 {
-	normal = glm::normalize(_normal);
+	normal = _normal;
 }
 
 Plane::~Plane()
@@ -31,17 +31,18 @@ HitInfo Plane::HasIntersected(Ray _ray)
 	rtn.intersectPoint = glm::vec3(0, 0, 0);
 	rtn.object = nullptr;
 
-	float denom = glm::dot(normal, _ray.GetDirection());
+	float denominator = glm::dot(normal, _ray.GetDirection()); //l⋅n
 	
-	if (glm::abs(denom) > 0.0001f)
+	if (glm::abs(denominator) > 0.0001f)
 	{
-		glm::vec3 difference = centre - _ray.GetOrgin();
-		float t = glm::dot(difference, normal) / denom;
-		//std::cout << t << std::endl;
+		glm::vec3 OrginToCentre = centre - _ray.GetOrgin();//p0−l0
+		float dotProduct = glm::dot(OrginToCentre, normal); //(p0−l0)⋅n
+		float t = dotProduct / denominator; //(p0−l0)⋅n / l⋅n
+
 		if (t >= 0)
 		{
 			rtn.hit = true;
-			rtn.intersectPoint = (_ray.GetOrgin() + _ray.GetDirection()) * t;
+			rtn.intersectPoint = _ray.GetOrgin() + t * _ray.GetDirection();
 			rtn.distance = glm::length(rtn.intersectPoint);
 			rtn.object = self;
 		}
