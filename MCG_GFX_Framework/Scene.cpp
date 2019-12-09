@@ -6,7 +6,12 @@
 #include "Camera.h"
 #include "Object.h"
 #include "Ray.h"
-#include "Light.h"
+#include "DistanceLight.h"
+#include "PointLight.h"
+#include "ThreadPool.h"
+
+#include "Sphere.h"
+#include "Plane.h"
 
 Scene::Scene(glm::ivec2 _windowSize)
 {
@@ -27,20 +32,37 @@ Scene::Scene(glm::ivec2 _windowSize)
 	MCG::SetBackground(glm::ivec3(0, 0, 0));
 }
 
-Scene::~Scene()
+void Scene::AddSphere(glm::vec3 _point, Material _mat, float _size)
 {
-
+	_mat.CheckCol();
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(_point, _size, _mat);
+	sphere->self = sphere;
+	objects.push_back(sphere);
 }
 
-
-/*
-Tasks and workers -> hint 
-*/
-void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vector<std::shared_ptr<Light>> _lights, int _screenSplitX, int _screenSplitY)
+void Scene::AddPlane(glm::vec3 _point, glm::vec3 direction, Material _mat)
 {
-	objects = _objects;
-	lights = _lights;
-	std::vector<std::thread> threads;
+	_mat.CheckCol();
+	std::shared_ptr<Plane> plane = std::make_shared<Plane>(_point, direction, _mat);
+	plane->self = plane;
+	objects.push_back(plane);
+}
+
+void Scene::AddDistantLight(glm::vec3& _color, float _intencity, glm::vec3& _direction)
+{
+	std::shared_ptr<DistanceLight> light = std::make_shared<DistanceLight>(_color, _intencity, _direction);
+	lights.push_back(light);
+}
+
+void Scene::AddPointLight(glm::vec3& _color, float _intencity, glm::vec3& _pos)
+{
+	std::shared_ptr<PointLight> light = std::make_shared<PointLight>(_color, _intencity, _pos);
+	lights.push_back(light);
+}
+
+void Scene::DrawScreen(int _screenSplitX, int _screenSplitY)
+{
+	ThreadPool pool{ 16 };
 
 	int widthToCheck = windowSize.x / _screenSplitX;
 	int hightToCheck = windowSize.y / _screenSplitY;
@@ -52,15 +74,14 @@ void Scene::DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vecto
 			glm::vec2 startpos(widthToCheck * x, hightToCheck * y);
 			glm::vec2 endpos(widthToCheck * (x + 1), hightToCheck * (y + 1));
 
-			std::thread t(&Scene::DrawScreenPart, this, startpos, endpos);
-			threads.push_back(std::move(t));
+			pool.AddToQueue([this, startpos, endpos]
+			{
+				DrawScreenPart(startpos, endpos);
+			});
 		}
 	}
 
-	for (auto& t : threads)
-	{
-		t.join();
-	}
+	pool.~ThreadPool();
 }
 
 void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
@@ -82,15 +103,16 @@ void Scene::DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos)
 
 glm::vec3 Scene::GetColor(Ray _ray)
 {
-	glm::vec3 pixelColour = glm::vec3(0);
+	glm::vec3 pixelColour(0);
+
 	if (_ray.GetDepth() < 3)
 	{
 
-		HitInfo hitInfo = CheckRay(_ray);
+		HitInfo hitInfo = SendRay(_ray);
 
 		if (hitInfo.hit)
 		{
-			switch (hitInfo.object->GetMaterial())
+			switch (hitInfo.object->GetMaterialType())
 			{
 			case Basic:
 				pixelColour = hitInfo.object->Shade(_ray, hitInfo.intersectPoint);
@@ -99,7 +121,7 @@ glm::vec3 Scene::GetColor(Ray _ray)
 			case Diffuse:
 				for (int i = 0; i < lights.size(); i++)
 				{
-					pixelColour += hitInfo.object->DiffuseShade(_ray, hitInfo.intersectPoint, lights.at(i)) * glm::vec3(InShadow(hitInfo));
+					pixelColour += hitInfo.object->DiffuseShade(_ray, hitInfo.intersectPoint, lights.at(i)) * InShadow(hitInfo);
 				}
 				break;
 
@@ -114,10 +136,7 @@ glm::vec3 Scene::GetColor(Ray _ray)
 			}
 			case Refraction:
 			{
-				glm::vec3 hitNormal = hitInfo.object->Normal(hitInfo.intersectPoint);
-				glm::vec3 refractDirection = Refract(_ray.GetDirection(), hitNormal, 1.3f);
-				Ray reflectRay = Ray(hitInfo.intersectPoint + hitNormal, refractDirection, _ray.GetDepth() + 1);
-				
+				glm::vec3 hitNormal = hitInfo.object->Normal(hitInfo.intersectPoint);				
 				glm::vec3 refractionColor(0);
 
 				// compute fresnel
@@ -131,11 +150,11 @@ glm::vec3 Scene::GetColor(Ray _ray)
 					refractionColor = GetColor(Ray(hitInfo.intersectPoint, refractionDirection, _ray.GetDepth() + 1));
 				}
 
-				glm::vec3 reflectionDirection = glm::normalize(Reflect(_ray.GetDirection(), hitNormal));
-				glm::vec3 reflectionColor = GetColor(Ray(hitInfo.intersectPoint, reflectionDirection, _ray.GetDepth() + 1));
+				/*glm::vec3 reflectionDirection = glm::normalize(Reflect(_ray.GetDirection(), hitNormal));
+				glm::vec3 reflectionColor = GetColor(Ray(hitInfo.intersectPoint, reflectionDirection, _ray.GetDepth() + 1));*/
 
 				// mix the two
-				pixelColour += reflectionColor * kr + refractionColor * (1 - kr);
+				pixelColour += /*reflectionColor **/ kr + refractionColor * (1 - kr);
 				break;
 			}
 			default:
@@ -148,12 +167,35 @@ glm::vec3 Scene::GetColor(Ray _ray)
 			pixelColour = glm::vec3(184, 74, 98);
 		}
 	}
+	else
+	{
+		pixelColour = glm::vec3(184, 74, 98);
+	}
 
-	pixelColour = glm::clamp(pixelColour, glm::vec3(0), glm::vec3(255));
+	pixelColour = glm::clamp(pixelColour, 0.0f, 255.0f);
 	return pixelColour;
 }
 
-int Scene::InShadow(HitInfo _info)
+HitInfo Scene::SendRay(Ray _ray)
+{
+	float distance = 2000;
+	HitInfo hitInfo;
+	hitInfo.hit = false;
+	for each (std::shared_ptr<Object> var in objects)
+	{
+		HitInfo check = var->HasIntersected(_ray);
+		if (check.hit && check.distance < distance)
+		{
+			distance = check.distance;
+			hitInfo = check;
+		}
+	}
+
+	return hitInfo;
+}
+
+
+glm::vec3 Scene::InShadow(HitInfo _info)
 {
 	glm::vec3 dir = lights.at(0)->GetDirection(_info.intersectPoint);
 	glm::vec3 origin = _info.intersectPoint + _info.object->Normal(_info.intersectPoint);
@@ -166,12 +208,12 @@ int Scene::InShadow(HitInfo _info)
 			HitInfo shadow = objects.at(i)->HasIntersected(shadowRay);
 			if (shadow.hit)
 			{
-				return 0;
+				return glm::vec3(0);
 			}
 		}
 	}
 
-	return 1;
+	return glm::vec3(1);
 }
 
 glm::vec3 Scene::Reflect(const glm::vec3 _direction, const glm::vec3 _normal)
@@ -230,22 +272,3 @@ float Scene::Fresnel(const glm::vec3 _direction, const glm::vec3 _normal, const 
 	// As a consequence of the conservation of energy, transmittance is given by:
 	//kt = 1 - kr;
 }
-
-HitInfo Scene::CheckRay(Ray _ray)
-{
-	float distance = 2000;
-	HitInfo hitInfo;
-	hitInfo.hit = false;
-	for each (std::shared_ptr<Object> var in objects)
-	{
-		HitInfo check = var->HasIntersected(_ray);
-		if (check.hit && check.distance < distance)
-		{
-				distance = check.distance;
-				hitInfo = check;
-		}
-	}
-
-	return hitInfo;
-}
-

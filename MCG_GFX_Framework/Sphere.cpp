@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-Sphere::Sphere(glm::vec3 _pos, glm::vec3 _color, Material _mat, float _rad) : Object(_pos, _color, _mat)
+Sphere::Sphere(glm::vec3 _pos, float _rad, Material _mat) : Object(_pos, _mat)
 {
 	radius = _rad;
 }
@@ -53,7 +53,7 @@ glm::vec3 Sphere::Normal(glm::vec3 _point)
 glm::vec3 Sphere::Shade(Ray _ray, glm::vec3 _point)
 {
 	float FR = glm::dot(Normal(_point), -_ray.GetDirection());
-	glm::fvec3 col = color * FR;
+	glm::fvec3 col = mat.color * FR;
 	col = glm::clamp(col, glm::vec3(0), glm::vec3(1));
 	return col * glm::vec3(255);
 }
@@ -62,7 +62,7 @@ glm::vec3 Sphere::DiffuseShade(Ray _ray, glm::vec3 _point, std::shared_ptr<Light
 {
 	glm::vec3 direction, lightAmount;
 	_light->GetLightAmountNDirection(_point, direction, lightAmount);
-	glm::vec3 hitCol = color * glm::dot(Normal(_point), direction) * lightAmount;
+	glm::vec3 hitCol = mat.color * glm::dot(Normal(_point), direction) * lightAmount;
 	hitCol = glm::clamp(hitCol, glm::vec3(0), glm::vec3(1));
 	return hitCol * glm::vec3(255);
 }

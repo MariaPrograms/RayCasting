@@ -7,13 +7,19 @@ class Light;
 class Ray;
 class Object;
 struct HitInfo;
+struct Material;
 
 class Scene
 {
 public:
 	Scene(glm::ivec2 _windowSize);
-	~Scene();
-	void DrawScreen(std::vector<std::shared_ptr<Object>> _objects, std::vector<std::shared_ptr<Light>> lights, int _screenSplitX, int _screenSplitY);
+	void DrawScreen(int _screenSplitX, int _screenSplitY);
+
+	//Setting The scene functions
+	void AddSphere(glm::vec3 _point, Material _mat, float _size);
+	void AddPlane(glm::vec3 _point, glm::vec3 direction, Material _mat);
+	void AddDistantLight(glm::vec3& _color, float _intencity, glm::vec3& _direction);
+	void AddPointLight(glm::vec3& _color, float _intencity, glm::vec3& _pos);
 
 private:
 	std::shared_ptr<Camera> camera;
@@ -23,9 +29,9 @@ private:
 
 	void DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos);
 	glm::vec3 GetColor(Ray _ray);
-	HitInfo CheckRay(Ray _ray);
+	HitInfo SendRay(Ray _ray);
 
-	int InShadow(HitInfo _info);
+	glm::vec3 InShadow(HitInfo _info);
 	glm::vec3 Reflect(const glm::vec3 _direction, const glm::vec3 _normal);
 	glm::vec3 Refract(const glm::vec3 _direction, const glm::vec3 _normal, const float ior);
 	float Fresnel(const glm::vec3 I, const glm::vec3 N, const float ior);

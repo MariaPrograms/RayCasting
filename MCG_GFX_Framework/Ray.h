@@ -14,15 +14,15 @@ struct HitInfo
 class Ray
 {
 public:
-	Ray(glm::vec3 _origin, glm::vec3 _dirction, int _depth);
-	glm::vec3 GetOrgin() { return origin; }
-	glm::vec3 GetDirection() { return dirction; }
-	int GetDepth() { return depth; }
+	Ray(const glm::vec3 _origin, glm::vec3 _dirction, int _depth);
+	const glm::vec3 GetOrgin() { return origin; } 
+	const glm::vec3 GetDirection() { return dirction; }
+	const int GetDepth() { return depth; }
 
 private:
 	glm::vec3 origin;
 	glm::vec3 dirction;
-	int depth; 
+	int depth;
 };
 
 
