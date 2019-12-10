@@ -30,6 +30,7 @@ Scene::Scene(glm::ivec2 _windowSize)
 	// Sets every pixel to the same colour
 	// parameters are RGBA, numbers are from 0 to 255
 	MCG::SetBackground(glm::ivec3(0, 0, 0));
+	backgroundColor = glm::vec3(0);
 }
 
 void Scene::AddSphere(glm::vec3 _point, Material _mat, float _size)
@@ -164,12 +165,12 @@ glm::vec3 Scene::GetColor(Ray _ray)
 		}
 		else
 		{
-			pixelColour = glm::vec3(184, 74, 98);
+			pixelColour = backgroundColor;
 		}
 	}
 	else
 	{
-		pixelColour = glm::vec3(184, 74, 98);
+		pixelColour = backgroundColor;
 	}
 
 	pixelColour = glm::clamp(pixelColour, 0.0f, 255.0f);

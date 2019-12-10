@@ -21,11 +21,14 @@ public:
 	void AddDistantLight(glm::vec3& _color, float _intencity, glm::vec3& _direction);
 	void AddPointLight(glm::vec3& _color, float _intencity, glm::vec3& _pos);
 
+	void SetBackgroundColor(glm::vec3 _color) { backgroundColor = _color; }
+
 private:
 	std::shared_ptr<Camera> camera;
 	glm::ivec2 windowSize;
 	std::vector<std::shared_ptr<Object>> objects;
 	std::vector<std::shared_ptr<Light>> lights;
+	glm::vec3 backgroundColor;
 
 	void DrawScreenPart(glm::vec2 _startPos, glm::vec2 _endPos);
 	glm::vec3 GetColor(Ray _ray);
