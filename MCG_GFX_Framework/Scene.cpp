@@ -219,7 +219,7 @@ glm::vec3 Scene::InShadow(HitInfo _info)
 
 glm::vec3 Scene::Reflect(const glm::vec3 _direction, const glm::vec3 _normal)
 {
-	return _direction - 2.0f * _normal * glm::dot(_direction, _normal);
+	return _direction + 2.0f * _normal * -glm::dot(_direction, _normal);
 }
 
 glm::vec3 Scene::Refract(const glm::vec3 _direction, const glm::vec3 _normal, const float _ior)
