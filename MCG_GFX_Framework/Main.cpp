@@ -44,9 +44,9 @@ int main(int argc, char *argv[])
 	*/
 
 	screen.SetBackgroundColor(glm::vec3(247));
-	Material purple = { glm::fvec3(204, 153, 255), Diffuse };
+	Material rainbow = { glm::fvec3(0), Diffuse };
 	screen.AddDistantLight(glm::vec3(1), 1.0f, glm::vec3(0, 0, 1));
-	glm::vec2 pos(-32, 25);
+	glm::vec3 pos(-32, 25, -80);
 
 	//Looping Circles for time testing
 	float maxX = 9;
@@ -57,11 +57,16 @@ int main(int argc, char *argv[])
 	{
 		for (int y = 0; y < maxX; y++)
 		{
-			screen.AddSphere(glm::vec3(pos.x, pos.y, -80), purple, 3);
+			float r = float(x) / maxY;
+			float g = float(y) / maxY;
+			float b = 0.4;
+			rainbow.color = glm::fvec3(r, g, b);
+			screen.AddSphere(glm::vec3(pos.x, pos.y, pos.z), rainbow, 4);
 			pos.x += spaceing;
 		}
 
 		pos.x = -32;
+		//pos.z -= 5;
 		pos.y -= spaceing;
 	}
 
