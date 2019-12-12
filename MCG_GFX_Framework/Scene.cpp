@@ -63,8 +63,7 @@ void Scene::AddPointLight(glm::vec3& _color, float _intencity, glm::vec3& _pos)
 
 void Scene::DrawScreen(int _screenSplitX, int _screenSplitY)
 {
-	ThreadPool pool{ 16 };
-
+	ThreadPool pool{ (size_t)(_screenSplitX  * _screenSplitY) };
 	int widthToCheck = windowSize.x / _screenSplitX;
 	int hightToCheck = windowSize.y / _screenSplitY;
 
@@ -122,7 +121,7 @@ glm::vec3 Scene::GetColor(Ray _ray)
 			case Diffuse:
 				for (int i = 0; i < lights.size(); i++)
 				{
-					pixelColour += hitInfo.object->DiffuseShade(_ray, hitInfo.intersectPoint, lights.at(i)) * InShadow(hitInfo);
+					pixelColour += hitInfo.object->DiffuseShade(_ray, hitInfo.intersectPoint, lights.at(i)) * InShadow(hitInfo, i);
 				}
 				break;
 
@@ -137,25 +136,11 @@ glm::vec3 Scene::GetColor(Ray _ray)
 			}
 			case Refraction:
 			{
-				glm::vec3 hitNormal = hitInfo.object->Normal(hitInfo.intersectPoint);				
-				glm::vec3 refractionColor(0);
+				glm::vec3 hitNormal = hitInfo.object->Normal(hitInfo.intersectPoint);	
+				glm::vec3 refractionDirection = glm::normalize(Refract(_ray.GetDirection(), hitNormal, hitInfo.object->GetIor()));
+				glm::vec3 refractionColor = GetColor(Ray(hitInfo.intersectPoint, refractionDirection, _ray.GetDepth() + 1));
 
-				// compute fresnel
-				float kr = Fresnel(_ray.GetDirection(), hitNormal, hitInfo.object->GetIor());
-				bool outside = glm::dot(_ray.GetDirection(), hitNormal) < 0;
-
-				// compute refraction if it is not a case of total internal reflection
-				if (kr < 1) 
-				{
-					glm::vec3 refractionDirection = glm::normalize(Refract(_ray.GetDirection(), hitNormal, hitInfo.object->GetIor()));
-					refractionColor = GetColor(Ray(hitInfo.intersectPoint, refractionDirection, _ray.GetDepth() + 1));
-				}
-
-				/*glm::vec3 reflectionDirection = glm::normalize(Reflect(_ray.GetDirection(), hitNormal));
-				glm::vec3 reflectionColor = GetColor(Ray(hitInfo.intersectPoint, reflectionDirection, _ray.GetDepth() + 1));*/
-
-				// mix the two
-				pixelColour += /*reflectionColor **/ kr + refractionColor * (1 - kr);
+				pixelColour += refractionColor;
 				break;
 			}
 			default:
@@ -196,9 +181,9 @@ HitInfo Scene::SendRay(Ray _ray)
 }
 
 
-glm::vec3 Scene::InShadow(HitInfo _info)
+glm::vec3 Scene::InShadow(HitInfo _info, int _light)
 {
-	glm::vec3 dir = lights.at(0)->GetDirection(_info.intersectPoint);
+	glm::vec3 dir = lights.at(_light)->GetDirection(_info.intersectPoint);
 	glm::vec3 origin = _info.intersectPoint + _info.object->Normal(_info.intersectPoint);
 	Ray shadowRay = Ray(origin, dir, 0);
 
@@ -224,25 +209,12 @@ glm::vec3 Scene::Reflect(const glm::vec3 _direction, const glm::vec3 _normal)
 
 glm::vec3 Scene::Refract(const glm::vec3 _direction, const glm::vec3 _normal, const float _ior)
 {
-	float cosi = glm::clamp(glm::dot(_direction, _normal), -1.0f, 1.0f);
-	float etai = 1;
-	float etat = _ior;
-	glm::vec3 n = _normal;
+	float c1 = glm::dot(_direction, _normal);
+	float n1 = 1;
+	float n = n1 / _ior;
 
-	if (cosi < 0)
-	{
-		cosi = -cosi;
-	}
-	else
-	{
-		std::swap(etai, etat); 
-		n = -_normal;
-	}
-
-	float eta = etai / etat;
-	float k = 1 - eta * eta * (1 - cosi * cosi);
-
-	return k < 0 ? glm::vec3(0) : eta * _direction + (eta * cosi - sqrtf(k)) * n;
+	float c2 = glm::sqrt(1 - glm::pow(n, 2) * (1 - glm::pow(c1, 2)));
+	return (n * _direction) + (n * c1 - c2) * _normal;
 }
 
 float Scene::Fresnel(const glm::vec3 _direction, const glm::vec3 _normal, const float ior)

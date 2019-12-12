@@ -19,8 +19,8 @@ Ray Camera::GenerateScreenRay(glm::vec2 pixel)
 	float range2 = 2;
 	float minimum2 = -1;
 
-	float ndcXPoint = pixel.x * 2 / widthRange - 1;
-	float ndcYPoint = (pixel.y * 2 / heightRange - 1) * -1;
+	float ndcXPoint = pixel.x * range2 / widthRange + minimum2;
+	float ndcYPoint = (pixel.y * range2 / heightRange + minimum2) * -1;
 
 	glm::vec4 ndcNearPlanePoint = glm::vec4(ndcXPoint, ndcYPoint, -1, 1);
 	glm::vec4 ndcFarPlanePoint = glm::vec4(ndcXPoint, ndcYPoint, 1, 1);

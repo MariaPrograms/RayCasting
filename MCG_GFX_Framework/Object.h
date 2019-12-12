@@ -23,7 +23,7 @@ struct Material
 {
 	glm::vec3 color;
 	MaterialType type;
-	float ior;
+	float ior = 1;
 
 	void CheckCol()
 	{

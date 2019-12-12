@@ -27,18 +27,51 @@ int main(int argc, char *argv[])
 
 	Scene screen(windowSize);
 
-	Material reflect = { glm::fvec3(255, 250, 250), Refelctive };
-	Material ground = { glm::fvec3(136, 41, 47), Diffuse };
+	//Material pink = { glm::fvec3(245.0f, 166.0f, 230.0f), Diffuse };
+	//Material purple = { glm::fvec3(204, 153, 255), Diffuse };
+	//Material lime = { glm::fvec3(178, 255, 102), Diffuse };
+	//Material lightBlue = { glm::fvec3(102, 255, 255), Diffuse };
+	//
 
-	Material cream = { glm::fvec3(255.0f, 237.0f, 237.0f), Diffuse };
-	Material pink = { glm::fvec3(245.0f, 166.0f, 230.0f), Diffuse };
+	/*
+	//One Diffuse Sphere
+	screen.SetBackgroundColor(glm::vec3(247));
+	Material purple = { glm::fvec3(255, 107, 107), Diffuse };
+
+	screen.AddDistantLight(glm::vec3(1), 1.0f, glm::vec3(0, 1, 1));
+
+	screen.AddSphere(glm::vec3(0, 0, -80), purple, 15); //Left
+	*/
+
+	screen.SetBackgroundColor(glm::vec3(247));
 	Material purple = { glm::fvec3(204, 153, 255), Diffuse };
-	Material lime = { glm::fvec3(178, 255, 102), Diffuse };
-	Material lightBlue = { glm::fvec3(102, 255, 255), Diffuse };
-	Material black = { glm::fvec3(128), Diffuse };
+	screen.AddDistantLight(glm::vec3(1), 1.0f, glm::vec3(0, 0, 1));
+	glm::vec2 pos(-32, 25);
+
+	//Looping Circles for time testing
+	float maxX = 9;
+	float maxY = 7;
+	float spaceing = 8;
+
+	for (int x = 0; x < maxY; x++)
+	{
+		for (int y = 0; y < maxX; y++)
+		{
+			screen.AddSphere(glm::vec3(pos.x, pos.y, -80), purple, 3);
+			pos.x += spaceing;
+		}
+
+		pos.x = -32;
+		pos.y -= spaceing;
+	}
+
 
 	/*
 	//SnowMan
+	Material ground = { glm::fvec3(255, 250, 255), Diffuse };
+	Material cream = { glm::fvec3(255.0f, 237.0f, 237.0f), Diffuse };
+	Material black = { glm::fvec3(128), Diffuse };
+
 	screen.SetBackgroundColor(glm::vec3(2, 184, 212));
 	screen.AddDistantLight(glm::vec3(1), 1.0f, glm::vec3(0, 1, 1));
 
@@ -87,6 +120,7 @@ int main(int argc, char *argv[])
 
 	/*
 	//Reflections on plane
+	Material reflect = { glm::fvec3(255, 250, 250), Refelctive };
 	Material pinky = { glm::fvec3(180, 134, 159), Diffuse };
 	Material violet = { glm::fvec3(207, 200, 230), Diffuse };
 	Material marroon = { glm::fvec3(110, 69, 85), Diffuse };
@@ -101,20 +135,27 @@ int main(int argc, char *argv[])
 	screen.AddSphere(glm::vec3(25, 0, -95), marroon, 10); //Right
 	*/
 
+	/*
+	//Reflective circles
+	Material reflect = { glm::fvec3(255), Refelctive };
+	Material ground = { glm::fvec3(255.0f, 250.0f, 250.0f), Diffuse };
+	Material peach = { glm::fvec3(255, 166, 158), Diffuse };
+	Material orange = { glm::fvec3(255, 126, 107), Diffuse };
 
-	//Shadows on circles
-	screen.SetBackgroundColor(glm::vec3(204, 229, 255));
+	screen.SetBackgroundColor(glm::vec3(140, 94, 88));
 	screen.AddDistantLight(glm::vec3(1), 1.0f, glm::vec3(0, 1, 1));
 
 	screen.AddPlane(glm::vec3(0, -10, 0), glm::vec3(0, 1, 0), ground); //Ground
-	screen.AddSphere(glm::vec3(25, 0, -80), lime, 10); //Right
+	screen.AddSphere(glm::vec3(25, 0, -80), peach, 10); //Right
+	screen.AddSphere(glm::vec3(-25, 10, -75), orange, 5); //Left Top
 
-	screen.AddSphere(glm::vec3(-25, 10, -75), purple, 5); //Left Top
 	screen.AddSphere(glm::vec3(-25, -5, -75), reflect, 5); //Left Top
-
 	screen.AddSphere(glm::vec3(-2, 5, -80), reflect, 15); //Centre
+	*/
 
 
+	//screen.AddPointLight(glm::fvec3(222, 239, 232) / glm::fvec3(255.0f), 1.0f, glm::vec3(-20, 30, -50));
+	//screen.AddPointLight(glm::vec3(247.0f / 255.0f, 178.0f / 255.0f, 173.0f / 255.0f), 1.0f, glm::vec3(20, 30, -80));
 
 	start = std::clock();
 	screen.DrawScreen(3, 3);

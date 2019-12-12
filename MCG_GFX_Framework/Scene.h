@@ -6,6 +6,7 @@ class Camera;
 class Light;
 class Ray;
 class Object;
+class ThreadPool;
 struct HitInfo;
 struct Material;
 
@@ -34,7 +35,7 @@ private:
 	glm::vec3 GetColor(Ray _ray);
 	HitInfo SendRay(Ray _ray);
 
-	glm::vec3 InShadow(HitInfo _info);
+	glm::vec3 InShadow(HitInfo _info, int _light);
 	glm::vec3 Reflect(const glm::vec3 _direction, const glm::vec3 _normal);
 	glm::vec3 Refract(const glm::vec3 _direction, const glm::vec3 _normal, const float ior);
 	float Fresnel(const glm::vec3 I, const glm::vec3 N, const float ior);
