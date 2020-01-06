@@ -211,7 +211,7 @@ glm::vec3 Scene::Refract(const glm::vec3 _direction, const glm::vec3 _normal, co
 {
 	float c1 = glm::dot(_direction, _normal);
 	float n1 = 1;
-	float n = n1 / _ior;
+	float n = _ior / n1;
 
 	float c2 = glm::sqrt(1 - glm::pow(n, 2) * (1 - glm::pow(c1, 2)));
 	return (n * _direction) + (n * c1 - c2) * _normal;
