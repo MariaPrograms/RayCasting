@@ -1,6 +1,7 @@
 # RayCasting
 
 To see any examples uncomment the scene you wish to see and click run. 
+Just changing this to test something
 
 To change the number of parts the screen is split up into 
 please use the change the numbers on line 174 "screen.DrawScreen(5, 5);"
